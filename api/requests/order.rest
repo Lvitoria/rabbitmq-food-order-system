@@ -1,0 +1,35 @@
+### Teste da API de Pedidos
+
+### Criar um novo pedido
+POST http://localhost:3000/api/orders
+Content-Type: application/json
+
+{
+    "name": "Hamburger",
+    "quantity": 2,
+    "unitPrice": 25.50
+}
+
+### Criar pedido com dados inválidos (para testar validação)
+POST http://localhost:3000/api/orders
+Content-Type: application/json
+
+{
+    "name": "Ha",
+    "quantity": 0,
+    "unitPrice": -1
+}
+
+### Listar todos os pedidos
+GET http://localhost:3000/api/orders
+
+### Buscar pedido por ID (substitua {id} pelo ID real) id que foi criado no teste anterior
+GET http://localhost:3000/api/orders/a085114a-f6d4-4afc-948e-cc102e011791
+
+
+### Buscar pedido por ID (substitua {id} pelo ID real)
+GET http://localhost:3000/api/orders/c98f3015-7a9b-4ed8-bd08-685f17fe5b87
+
+
+### Verificar status da API
+GET http://localhost:3000/ 
