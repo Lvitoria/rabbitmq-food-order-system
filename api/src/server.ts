@@ -10,16 +10,19 @@ connectDB();
 
 app.use(express.json());
 
-app.use('/api/orders', orderRoutes);
-
-app.get('/', (req, res) => {
-    res.json({ 
+app.get('/api/orders/health', (req, res) => {
+    console.log('Health check');
+    res.json({
         success: true,
         message: 'API de Pedidos funcionando!',
         version: '1.0.0',
         timestamp: new Date().toISOString()
     });
 });
+
+app.use('/api/orders', orderRoutes);
+
+
 
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.error(err.stack);
