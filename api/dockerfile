@@ -1,0 +1,21 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copiar apenas arquivos de dependências primeiro
+COPY package*.json tsconfig*.json ./
+
+# Instalar dependências
+RUN npm install
+
+# Copiar o resto do código
+COPY . .
+
+# Compilar TypeScript
+RUN npm run build
+
+# Expor a porta da aplicação
+EXPOSE 3000
+
+# Rodar a aplicação
+CMD ["node", "dist/server.js"]
