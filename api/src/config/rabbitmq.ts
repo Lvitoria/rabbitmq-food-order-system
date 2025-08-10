@@ -1,36 +1,34 @@
 import amqp from 'amqplib';
 
-const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://admin:admin@localhost:5672';
+const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://admin:password@rabbitmq:5672';
 
-export const connectToRabbitMQ = async () => {
-    try {
-        const connection = await amqp.connect(RABBITMQ_URL);
-        const channel = await connection.createChannel();
-        
-        // Declarar as filas que vamos usar
-        await channel.assertQueue('order_queue', {
-            durable: true // A fila sobrevive a reinicializações do RabbitMQ
-        });
+let channel: amqp.Channel | null = null;
 
-        await channel.assertQueue('delivery_queue', {
-            durable: true
-        });
+export const connectRabbitMQ = async () => {
+  try {
+    console.log(`Connecting to RabbitMQ at ${RABBITMQ_URL}`)
+    const connection = await amqp.connect(RABBITMQ_URL);
+    channel = await connection.createChannel();
+    
+    // Declarar as filas que vamos usar e garantir que elas existem
+    await channel.assertQueue('order_queue', { durable: true });
 
-        return { connection, channel };
-    } catch (error) {
-        console.error('Erro ao conectar com RabbitMQ:', error);
-        throw error;
-    }
+    console.log('Connected to RabbitMQ and channel created');
+
+  } catch (error: any) {
+    console.error('Failed to connect to RabbitMQ', error);
+    throw new Error(`RabbitMQ connection failed: ${error?.message}`);
+    // Encerrar o processo se a conexão falhar, pois o aplicativo não pode funcionar sem ela
+    // process.exit(1);
+  }
 };
 
-export const publishToQueue = async (channel: amqp.Channel, queue: string, message: any) => {
-    try {
-        const messageBuffer = Buffer.from(JSON.stringify(message));
-        return channel.sendToQueue(queue, messageBuffer, {
-            persistent: true // Garante que a mensagem não será perdida se o RabbitMQ reiniciar
-        });
-    } catch (error) {
-        console.error('Erro ao publicar mensagem:', error);
-        throw error;
-    }
-}; 
+export const publishToQueue = (queueName: string, message: any) => {
+  if (!channel) {
+    throw new Error('RabbitMQ channel not available. Connect first.');
+  }
+  
+  const messageBuffer = Buffer.from(JSON.stringify(message));
+  channel.sendToQueue(queueName, messageBuffer);
+  console.log(`Message sent to queue ${queueName}`);
+};

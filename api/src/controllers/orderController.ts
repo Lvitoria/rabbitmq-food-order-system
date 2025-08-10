@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Order } from '../models/Order';
 import { v4 as uuidv4 } from 'uuid';
-import { connectToRabbitMQ, publishToQueue } from '../config/rabbitmq';
+import { publishToQueue } from '../config/rabbitmq';
 
 export const createOrder = async (req: Request, res: Response) => {
     try {
@@ -18,17 +18,11 @@ export const createOrder = async (req: Request, res: Response) => {
             }
         });
 
-        // Conectar ao RabbitMQ
-        const { connection, channel } = await connectToRabbitMQ();
-
-        // Publicar o pedido na fila
-        await publishToQueue(channel, 'order_queue', {
+        // Publicar o pedido na fila usando a conexão persistente
+        publishToQueue('order_queue', {
             orderId: order.id,
             ...order.originalRequest
         });
-
-        // Fechar a conexão
-        await connection.close();
 
         return res.status(201).json({
             success: true,

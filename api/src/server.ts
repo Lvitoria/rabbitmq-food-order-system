@@ -1,12 +1,14 @@
 import 'dotenv/config';
 import express from 'express';
 import connectDB from './config/database';
+import { connectRabbitMQ } from './config/rabbitmq';
 import orderRoutes from './routes/orderRoutes';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 connectDB();
+connectRabbitMQ(); 
 
 app.use(express.json());
 
@@ -26,6 +28,7 @@ app.use('/api/orders', orderRoutes);
 
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.error(err.stack);
+    console.error(err.message);
     res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',
