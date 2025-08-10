@@ -1,79 +1,65 @@
 import { Request, Response } from 'express';
-import { Order } from '../models/Order';
-import { v4 as uuidv4 } from 'uuid';
-import { publishToQueue } from '../config/rabbitmq';
+import { IOrderService } from '../interfaces/IOrderService';
 
-export const createOrder = async (req: Request, res: Response) => {
-    try {
-        const { name, quantity, unitPrice } = req.body;
-        const totalValue = quantity * unitPrice;
+export class OrderController {
+    private orderService: IOrderService;
 
-        const order = await Order.create({
-            id: uuidv4(),
-            originalRequest: {
-                name,
-                quantity,
-                unitPrice,
-                totalValue
-            }
-        });
-
-        // Publicar o pedido na fila usando a conexão persistente
-        publishToQueue('order_queue', {
-            orderId: order.id,
-            ...order.originalRequest
-        });
-
-        return res.status(201).json({
-            success: true,
-            data: order
-        });
-    } catch (error) {
-        console.error('Erro ao criar pedido:', error);
-        return res.status(500).json({
-            success: false,
-            error: 'Erro ao criar pedido',
-            stack: error instanceof Error ? error.stack : undefined
-        });
+    constructor(orderService: IOrderService) {
+        this.orderService = orderService;
     }
-};
 
-export const getOrders = async (req: Request, res: Response) => {
-    try {
-        const orders = await Order.find({}, { status: 0 }).sort({ createdAt: -1 });
-        console.log(orders)
-        return res.status(200).json({
-            success: true,
-            count: orders.length,
-            data: orders
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            error: 'Erro ao buscar pedidos'
-        });
-    }
-};
-
-export const getOrderById = async (req: Request, res: Response) => {
-    try {
-        const order = await Order.findOne({ id: req.params.id }, { status: 0 });
-        
-        if (!order) {
-            return res.status(404).json({
+    async createOrder(req: Request, res: Response) {
+        try {
+            const { name, quantity, unitPrice } = req.body;
+            const order = await this.orderService.createOrder({ name, quantity, unitPrice });
+            return res.status(201).json({
+                success: true,
+                data: order
+            });
+        } catch (error) {
+            console.error('Erro ao criar pedido:', error);
+            return res.status(500).json({
                 success: false,
-                error: 'Pedido não encontrado'
+                error: 'Erro ao criar pedido',
+                stack: error instanceof Error ? error.stack : undefined
             });
         }
+    };
 
-        return res.status(200).json({
-            success: true,
-            data: order
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            error: 'Erro ao buscar pedido'
-        });
-    }
-}; 
+    async getOrders(req: Request, res: Response) {
+        try {
+            const orders = await this.orderService.getOrders();
+            return res.status(200).json({
+                success: true,
+                count: orders.length,
+                data: orders
+            });
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error: 'Erro ao buscar pedidos'
+            });
+        }
+    };
+
+    async getOrderById(req: Request, res: Response) {
+        try {
+            const order = await this.orderService.getOrderById(req.params.id);
+            if (!order) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Pedido não encontrado'
+                });
+            }
+            return res.status(200).json({
+                success: true,
+                data: order
+            });
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error: 'Erro ao buscar pedido'
+            });
+        }
+    };
+}
