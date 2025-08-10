@@ -47,7 +47,7 @@ export const createOrder = async (req: Request, res: Response) => {
 export const getOrders = async (req: Request, res: Response) => {
     try {
         const orders = await Order.find({}, { status: 0 }).sort({ createdAt: -1 });
-        
+        console.log(orders)
         return res.status(200).json({
             success: true,
             count: orders.length,

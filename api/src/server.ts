@@ -10,8 +10,8 @@ connectDB();
 
 app.use(express.json());
 
-app.get('/api/orders/health', (req, res) => {
-    console.log('Health check');
+app.get('/api/health', (req, res) => {
+    console.log('Health check!!');
     res.json({
         success: true,
         message: 'API de Pedidos funcionando!',

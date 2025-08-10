@@ -2,9 +2,10 @@
 
 
 
-GET GET http://localhost:3000/api/orders/health
+GET http://localhost:3000/api/health
 Content-Type: application/json
 
+### Listar todos os pedidos
 GET http://localhost:3000/api/orders
 Content-Type: application/json
 

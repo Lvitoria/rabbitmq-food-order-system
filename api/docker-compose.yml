@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   api-food-order-system:
-    build: .
+    build:
+      context: .
+      dockerfile: dockerfile
+    command: npm run dev
     ports:
       - "3000:3000"
     environment:
@@ -14,6 +17,10 @@ services:
     depends_on:
       - mongo
       - rabbitmq
+    #bind mounts to allow live code changes, useful for development
+    volumes:
+      - .:/app
+      - /app/node_modules
 
   mongo:
     image: mongo:latest
