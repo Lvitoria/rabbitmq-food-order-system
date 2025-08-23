@@ -2,3 +2,7 @@ api/node_modules
 api/package-lock.json
 api/yarn.lock
 api/dist
+worker/node_modules
+worker/package-lock.json
+worker/yarn.lock
+worker/dist

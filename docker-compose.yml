@@ -1,0 +1,64 @@
+
+version: '3.8'
+
+services:
+  api-food-order-system:
+    build:
+      context: ./api
+      dockerfile: dockerfile
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/food-order-system
+      MONGODB_USER: admin
+      MONGODB_PASS: admin123
+      RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+    depends_on:
+      - mongo
+      - rabbitmq
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+
+  worker-food-order-system:
+    build:
+      context: ./worker
+      dockerfile: dockerfile
+    command: npm run start
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/food-order-system
+      MONGODB_USER: admin
+      MONGODB_PASS: admin123
+      RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+    depends_on:
+      - mongo
+      - rabbitmq
+    volumes:
+      - ./worker:/app
+      - /app/node_modules
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=password
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+volumes:
+  mongo-data:
+  rabbitmq-data:
