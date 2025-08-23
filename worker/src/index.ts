@@ -1,4 +1,5 @@
 
+import 'dotenv/config';
 import { connectRabbitMQ, consumeFromQueue, acknowledgeMessage } from './config/rabbitmq';
 import connectDB from './config/database';
 import { OrderService } from './services/OrderService';

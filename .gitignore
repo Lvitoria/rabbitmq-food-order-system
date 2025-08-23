@@ -6,3 +6,5 @@ worker/node_modules
 worker/package-lock.json
 worker/yarn.lock
 worker/dist
+api/.env
+worker/.env
