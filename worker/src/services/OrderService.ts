@@ -12,11 +12,27 @@ export class OrderService implements IOrderService {
     // Simulate processing time
     await new Promise(resolve => setTimeout(resolve, 5000));
 
-    await this.orderRepository.update(orderId, { status: 'in_preparation' });
+    await this.orderRepository.update(orderId, { 
+        status: 'in_preparation',
+        $push: {
+          statusHistory: {
+            status: 'in_preparation',
+            updatedAt: Date.now()
+          }
+        }
+    });
 
     // Simulate more processing time
     await new Promise(resolve => setTimeout(resolve, 5000));
 
-    await this.orderRepository.update(orderId, { status: 'ready_for_delivery' });
+    await this.orderRepository.update(orderId, { 
+      status: 'ready_for_delivery',
+      $push: {
+        statusHistory: {
+          status: 'ready_for_delivery',
+          updatedAt: Date.now()
+        }
+      }
+    });
   }
 }

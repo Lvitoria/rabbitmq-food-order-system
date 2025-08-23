@@ -18,6 +18,10 @@ export class OrderService implements IOrderService {
         unitPrice,
         totalValue,
       },
+      statusHistory: [{
+        status: 'in_queue',
+        updatedAt: Date.now()
+      }]
     });
 
     publishToQueue('order_queue', {

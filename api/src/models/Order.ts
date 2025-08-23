@@ -34,7 +34,18 @@ const orderSchema = new mongoose.Schema({
         type: String,
         enum: ['in_queue', 'in_preparation', 'ready_for_delivery', 'out_for_delivery', 'delivered', 'cancelled'],
         default: 'in_queue'
-    }
+    },
+    statusHistory: [{
+        status: {
+            type: String,
+            enum: ['in_queue', 'in_preparation', 'ready_for_delivery', 'out_for_delivery', 'delivered', 'cancelled'],
+            required: true
+        },
+        updatedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 }, {
     timestamps: true
 });
