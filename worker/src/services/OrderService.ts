@@ -6,7 +6,7 @@ export class OrderService implements IOrderService {
 
   constructor(private orderRepository: IOrderRepository) {}
 
-  async processOrder(message: any): Promise<void> {
+  processOrder = async (message: any): Promise<void> => {
     const { orderId } = message;
 
     // Simulate processing time

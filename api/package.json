@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "nodemon -L -r dotenv/config src/server.ts",
-    "build": "tsc "
+    "build": "tsc"
   },
   "dependencies": {
     "amqplib": "^0.10.8",
