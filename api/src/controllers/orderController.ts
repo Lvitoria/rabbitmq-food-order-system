@@ -8,7 +8,7 @@ export class OrderController {
         this.orderService = orderService;
     }
 
-    async createOrder(req: Request, res: Response) {
+    createOrder = async (req: Request, res: Response) => {
         try {
             const { name, quantity, unitPrice } = req.body;
             const order = await this.orderService.createOrder({ name, quantity, unitPrice });
@@ -26,7 +26,7 @@ export class OrderController {
         }
     };
 
-    async getOrders(req: Request, res: Response) {
+    getOrders = async (req: Request, res: Response) => {
         try {
             const orders = await this.orderService.getOrders();
             return res.status(200).json({
@@ -42,7 +42,7 @@ export class OrderController {
         }
     };
 
-    async getOrderById(req: Request, res: Response) {
+    getOrderById = async (req: Request, res: Response) => {
         try {
             const order = await this.orderService.getOrderById(req.params.id);
             if (!order) {
