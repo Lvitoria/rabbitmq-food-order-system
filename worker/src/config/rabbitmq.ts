@@ -25,11 +25,13 @@ export const consumeFromQueue = (queueName: string, callback: (message: amqp.Con
   if (!channel) {
     throw new Error('RabbitMQ channel not available. Connect first.');
   }
-  
+
+  // noAck : falso pq queremos garantir que a mensagem seja processada antes de ser removida da fila
   channel.consume(queueName, callback, { noAck: false });
   console.log(`Started consuming from queue ${queueName}`);
 };
 
+// Função para reconhecer (acknowledge) a mensagem após o processamento bem-sucedido
 export const acknowledgeMessage = (message: amqp.ConsumeMessage) => {
     if (channel) {
         channel.ack(message);

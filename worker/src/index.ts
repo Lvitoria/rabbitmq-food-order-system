@@ -18,7 +18,7 @@ const startWorker = async () => {
       try {
         const content = JSON.parse(message.content.toString());
         await orderService.processOrder(content);
-        acknowledgeMessage(message);
+        acknowledgeMessage(message); // delegate message acknowledgment
       } catch (error) {
         console.error('Error processing message:', error);
         // Optionally, you can reject the message and send it to a dead-letter queue
